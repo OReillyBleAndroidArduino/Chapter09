@@ -7,10 +7,12 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * This class represents a generic Bluetooth Peripheral
@@ -22,6 +24,9 @@ import java.util.List;
 public class BlePeripheral {
     private static final String TAG = BlePeripheral.class.getSimpleName();
     public static final String CHARACTER_ENCODING = "ASCII";
+
+    // this is the UUID of the descriptor used to enable and disable notifications
+    public static final UUID CHARACTERISTIC_CONFIG_DESCRIPTOR_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
     private BluetoothDevice mBluetoothDevice;
     private BluetoothGatt mBluetoothGatt;
@@ -126,16 +131,14 @@ public class BlePeripheral {
     /**
      * Subscribe or unsubscribe from Characteristic Notifications
      *
-     * New in this chapter
-     *
      * @param characteristic
-     * @param enabled <b>true</b> for "subscribe" <b>false</b> for "unsubscribe"
+     * @param enableNotifications <b>true</b> for "subscribe" <b>false</b> for "unsubscribe"
      */
-    public void setCharacteristicNotification(final BluetoothGattCharacteristic characteristic, final boolean enabled) {
+    public void setCharacteristicNotification(final BluetoothGattCharacteristic characteristic, final boolean enableNotifications) {
         // modified from http://stackoverflow.com/a/18011901/5671180
         // This is a 2-step process
         // Step 1: set the Characteristic Notification parameter locally
-        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+        mBluetoothGatt.setCharacteristicNotification(characteristic, enableNotifications);
         // Step 2: Write a descriptor to the Bluetooth GATT enabling the subscription on the Perpiheral
         // turns out you need to implement a delay between setCharacteristicNotification and setvalue.
         // maybe it can be handled with a callback, but this is an easy way to implement
@@ -143,8 +146,9 @@ public class BlePeripheral {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                BluetoothGattDescriptor descriptor = characteristic.getDescriptor(characteristic.getUuid());
-                if (enabled) {
+                BluetoothGattDescriptor descriptor = characteristic.getDescriptor(CHARACTERISTIC_CONFIG_DESCRIPTOR_UUID);
+
+                if (enableNotifications) {
                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                 } else {
                     descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
@@ -155,6 +159,7 @@ public class BlePeripheral {
 
 
     }
+
 
 
 

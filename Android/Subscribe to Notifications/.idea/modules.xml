@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/09. Subscribe to Notifications.iml" filepath="$PROJECT_DIR$/09. Subscribe to Notifications.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Subscribe to Notifications.iml" filepath="$PROJECT_DIR$/Subscribe to Notifications.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
